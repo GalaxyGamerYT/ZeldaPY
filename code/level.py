@@ -7,6 +7,7 @@ from support import *
 from random import choice
 from weapon import Weapon
 from ui import UI
+from enemy import Enemy
 
 class Level:
     def __init__(self):
@@ -31,7 +32,8 @@ class Level:
         layouts = {
             'boundary': import_csv_layout('map/map_FloorBlocks.csv'),
             'grass': import_csv_layout('map/map_Grass.csv'),
-            'object':import_csv_layout('map/map_Objects.csv'),
+            'object': import_csv_layout('map/map_Objects.csv'),
+            'entities': import_csv_layout('map/map_Entities.csv')
         }
         graphics = {
             'grass': import_folder('graphics/grass'),
@@ -51,17 +53,24 @@ class Level:
                             # create a grass tile
                             random_grass_image = choice(graphics['grass'])
                             Tile((x,y),[self.visible_sprites,self.obstacle_sprites],'grass',random_grass_image)
+                        
                         if style == 'object':
                             # create a gobject tile
                             surf = graphics['objects'][int(col)]
                             Tile((x,y),[self.visible_sprites,self.obstacle_sprites],'object',surf)
-        self.player = Player(
-            (2000,1430),
-            [self.visible_sprites],
-            self.obstacle_sprites,
-            self.create_attack,
-            self.destroy_attack,
-            self.create_magic)
+                        
+                        if style == 'entities':
+                            if col == '394':
+                                self.player = Player(
+                                    (x,y),
+                                    [self.visible_sprites],
+                                    self.obstacle_sprites,
+                                    self.create_attack,
+                                    self.destroy_attack,
+                                    self.create_magic)
+                            else:
+                                Enemy('monster',(x,y),[self.visible_sprites])
+
 
     def create_attack(self):
         self.current_attack = Weapon(self.player,[self.visible_sprites])
