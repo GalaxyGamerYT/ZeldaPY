@@ -90,6 +90,7 @@ class Game:
             controlsWeaponAttack = instructionsFont.render("SPACE to malee attack.", False, TEXT_COLOUR)
             controlsMagicSwitch = instructionsFont.render("E to switch magic type.", False, TEXT_COLOUR)
             controlsMagicAttack = instructionsFont.render("LCTRL to use magic.", False, TEXT_COLOUR)
+            controlsUpgradeMenu = instructionsFont.render("M to open and close upgrade menu.", False, TEXT_COLOUR)
             
             self.screen.blit(clickToPlay, ((WIDTH // 2) - (clickToPlay.get_width() // 2),(HEIGHT // 2) - (clickToPlay.get_height() // 2)))
             self.screen.blit(controlsMove, (25,25))
@@ -97,6 +98,7 @@ class Game:
             self.screen.blit(controlsWeaponAttack, (25,75))
             self.screen.blit(controlsMagicSwitch, (25,100))
             self.screen.blit(controlsMagicAttack, (25,125))
+            self.screen.blit(controlsUpgradeMenu, (25,150))
             
             pygame.display.update()
             
