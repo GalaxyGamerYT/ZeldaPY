@@ -13,7 +13,7 @@ from magic import MagicPlayer
 from upgrade import Upgrade
 
 class Level:
-    def __init__(self):
+    def __init__(self,gameOver,game_over,start_timer):
 
         # get the display surface
         self.display_surface = pygame.display.get_surface()
@@ -32,12 +32,19 @@ class Level:
         self.create_map()
 
         # user interface
-        self.ui = UI()
+        self.ui = UI(start_timer)
         self.upgrade = Upgrade(self.player)
         
         # particles
         self.animation_player = AnimationPlayer()
         self.magic_player = MagicPlayer(self.animation_player)
+        
+        # game over
+        self.game_over = game_over
+        self.gameOver = gameOver
+        self.game_over_cooldown = 50
+        self.game_over_time = None
+        self.game_over_activate = False
 
     def create_map(self):
         layouts = {
@@ -129,14 +136,18 @@ class Level:
 
     def damage_player(self,amount,attack_type):
         if self.player.vulnerable:
-            self.player.health -= amount
-            self.player.vulnerable = False
-            self.player.hurt_time = pygame.time.get_ticks()
-            # spawn particles
-            self.animation_player.create_particles(attack_type,self.player.rect.center,[self.visible_sprites])
+            if self.player.health > 0:
+                self.player.health -= amount
+                self.player.vulnerable = False
+                self.player.hurt_time = pygame.time.get_ticks()
+                # spawn particles
+                self.animation_player.create_particles(attack_type,self.player.rect.center,[self.visible_sprites])
+            else:
+                self.player.health <= 0
+                self.game_over_time = pygame.time.get_ticks()
+                self.game_over = True
 
     def trigger_death_particles(self,pos,particle_type):
-        
         self.animation_player.create_particles(particle_type,pos,[self.visible_sprites])
 
     def add_exp(self,amount):
@@ -144,6 +155,16 @@ class Level:
 
     def toggle_menu(self):
         self.game_paused = not self.game_paused
+
+    def check_death(self):
+        if self.game_over_activate:
+            self.gameOver()
+
+    def cooldowns(self):
+        current_time = pygame.time.get_ticks()
+        if self.game_over:
+            if current_time - self.game_over_time >= self.game_over_cooldown:
+                self.game_over_activate = True
 
     def run(self):
         self.visible_sprites.custom_draw(self.player)
@@ -156,6 +177,8 @@ class Level:
             self.visible_sprites.update()
             self.visible_sprites.enemy_update(self.player)
             self.player_attack_logic()
+            self.cooldowns()
+            self.check_death()
 
 
 class YSortCameraGroup(pygame.sprite.Group):
