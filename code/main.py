@@ -9,6 +9,8 @@ class Game:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH,HEIGHT))
         pygame.display.set_caption('Zelda')
+        icon = pygame.image.load("graphics/test/player.ico")
+        pygame.display.set_icon(icon)
         self.clock = pygame.time.Clock()
 
         self.game_over = False
